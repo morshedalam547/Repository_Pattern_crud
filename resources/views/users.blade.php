@@ -21,7 +21,7 @@
                     <input type="email" name="email" id="email" class="form-control" placeholder="Email" required>
                 </div>
                 <div class="col-md-3 col-sm-12">
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Password">
                 </div>
                 <div class="col-md-1 col-sm-12">
                     <button type="submit" class="btn btn-primary w-100" id="submitBtn">Add</button>
@@ -76,8 +76,15 @@ $(function () {
                         <td>${user.name}</td>
                         <td>${user.email}</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-info editBtn" data-id="${user.id}" data-name="${user.name}" data-email="${user.email}"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="btn btn-sm btn-danger deleteBtn" data-id="${user.id}"><i class="fas fa-trash"></i> Delete</button>
+                            <button class="btn btn-sm btn-info editBtn" 
+                                data-id="${user.id}" 
+                                data-name="${user.name}" 
+                                data-email="${user.email}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger deleteBtn" data-id="${user.id}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
                         </td>
                     </tr>`;
             });
@@ -94,17 +101,16 @@ $(function () {
         let userId = $('#user_id').val();
         let url = userId ? '/users/' + userId : '/users';
 
-        // form data serialize
         let formData = $(this).serializeArray();
+        formData.push({name: "_token", value: "{{ csrf_token() }}"});
 
-        // যদি update হয়, Laravel এর জন্য _method=PUT যোগ করো
         if(userId){
             formData.push({name: "_method", value: "PUT"});
         }
 
         $.ajax({
             url: url,
-            type: 'POST', // সবসময় POST পাঠাও
+            type: 'POST',
             data: $.param(formData),
             success: function(response){
                 showAlert('success', userId ? 'User updated successfully!' : 'User added successfully!');
@@ -120,7 +126,7 @@ $(function () {
         });
     });
 
-    // Edit button click
+    // Edit button
     $(document).on('click', '.editBtn', function () {
         let id = $(this).data('id');
         $('#user_id').val(id);
@@ -133,22 +139,25 @@ $(function () {
     // Delete user
     $(document).on('click', '.deleteBtn', function () {
         let id = $(this).data('id');
-        if(confirm("Are you sure you want to delete this user?")) {
+        // if(confirm("Are you sure you want to delete this user?")) {
             $.ajax({
                 url: '/users/' + id,
-                type: 'DELETE',
-                data: {_token: '{{ csrf_token() }}'},
+                type: 'POST', // Laravel DELETE override
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    _method: 'DELETE'
+                },
                 success: function() {
-                    showAlert('success', 'User deleted successfully!');
+                    // showAlert('success', 'User deleted successfully!');
                     loadUsers();
                 },
                 error: function(){
                     showAlert('danger', 'Failed to delete user');
                 }
             });
-        }
+        })
     });
 
-});
+// });
 </script>
 @endpush

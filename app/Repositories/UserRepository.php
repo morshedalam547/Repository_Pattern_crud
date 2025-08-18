@@ -1,36 +1,23 @@
 <?php
-
 namespace App\Repositories;
 
 use App\Models\User;
 
-class UserRepository implements UserRepositoryInterface
-{
-    public function all()
-    {
-        return User::all();
+class UserRepository implements UserRepositoryInterface {
+
+    public function all() {
+        return User::latest()->get();
     }
 
-    public function create(array $data)
-    {
+    public function find($id) {
+        return User::find($id);
+    }
+
+    public function create(array $data) {
         return User::create($data);
     }
 
-    public function delete($id)
-    {
+    public function delete($id) {
         return User::destroy($id);
-    }
-
-    // Add this method
-    public function find($id)
-    {
-        return User::findOrFail($id);
-    }
-
-    public function update($id, array $data)
-    {
-        $user = $this->find($id);
-        $user->update($data);
-        return $user;
     }
 }
