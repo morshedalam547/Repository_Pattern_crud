@@ -142,13 +142,13 @@ $(function () {
         // if(confirm("Are you sure you want to delete this user?")) {
             $.ajax({
                 url: '/users/' + id,
-                type: 'POST', // Laravel DELETE override
+                type: 'POST', 
                 data: {
                     _token: '{{ csrf_token() }}',
                     _method: 'DELETE'
                 },
                 success: function() {
-                    // showAlert('success', 'User deleted successfully!');
+                    showAlert('danger', 'User deleted successfully!');
                     loadUsers();
                 },
                 error: function(){
